@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Red</title>
+  <h1> Simulador de Red </h1>
+  <style>
+    body {
+      background-color: #DBF9FC; /* Color de fondo */
+      font-family: Arial, sans-serif; /* Fuente */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff; /* Color de fondo del contenedor */
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra */
+    }
+
+    .router-container {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .router {
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
+      font-weight: bold;
+      position: relative;
+      border-radius: 50%;
+      cursor: default; /* Deshabilitar la selección */
+      transition: background-color 0.3s ease; /* Transición suave de color */
+    }
+
+    .router img {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+    /* Colores personalizados para cada router */
+    .router[data-status="disconnected"] {
+      background-color: #ccc; /* Color gris cuando está desconectado */
+    }
+
+    .router[data-status="disconnected"]::after {
+      content: 'X';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+    }
+
+    #router1 { background-color: #3498db; color: white; }
+    #router2 { background-color: #2ecc71; color: white; }
+    #router3 { background-color: #e74c3c; color: white; }
+    #router4 { background-color: #f39c12; color: white; }
+
+    .link {
+      width: 2px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-1px);
+    }
+
+    /* Ocultar la línea del enlace */
+    .link.hidden {
+      display: none;
+    }
+
+    /* Estilos para el contenedor de selección de router */
+    .router-select {
+      margin-bottom: 10px;
+    }
+
+    .router-select label {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .router-select select {
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    .button-container {
+      text-align: center;
+    }
+
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #3498db; /* Color de fondo del botón */
+      color: white; /* Color del texto del botón */
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-container button:hover {
+      background-color: #2980b9; /* Cambio de color al pasar el mouse */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="router-container">
+      <div id="router1" class="router" data-status="connected">
+        <img src="router.jpg" alt="Router 1">
+        R1
+      </div>
+      <div id="link1" class="link" style="background-color: #3498db;"></div>
+    </div>
+    <div class="router-container">
+      <div id="router2" class="router" data-status="connected">
+        <img src="router.jpg" alt="Router 2">
+        R2
+      </div>
+      <div id="link2" class="link" style="background-color: #2ecc71;"></div>
+    </div>
+    <div class="router-container">
+      <div id="router3" class="router" data-status="connected">
+        <img src="router.jpg" alt="Router 3">
+        R3
+      </div>
+      <div id="link3" class="link" style="background-color: #e74c3c;"></div>
+    </div>
+    <div class="router-container">
+      <div id="router4" class="router" data-status="connected">
+        <img src="router.jpg" alt="Router 4">
+        R4
+      </div>
+      <div id="link4" class="link" style="background-color: #f39c12;"></div>
+    </div>
+
+    <div class="router-select">
+      <label for="disconnect-router">Seleccione el router a desconectar:</label>
+      <select id="disconnect-router">
+        <option value="router1">R1</option>
+        <option value="router2">R2</option>
+        <option value="router3">R3</option>
+        <option value="router4">R4</option>
+      </select>
+    </div>
+
+    <div class="button-container">
+      <button onclick="disconnectLink()">Desconectar Enlace</button>
+    </div>
+
+    <div class="router-select">
+      <label for="connect-router">Seleccione el router a conectar:</label>
+      <select id="connect-router">
+        <option value="router1">R1</option>
+        <option value="router2">R2</option>
+        <option value="router3">R3</option>
+        <option value="router4">R4</option>
+      </select>
+    </div>
+
+    <div class="button-container">
+      <button onclick="reconnectLink()">Reconectar Enlace</button>
+    </div>
+  </div>
+
+  <script>
+    function disconnectLink() {
+      var selectedRouter = document.getElementById('disconnect-router').value;
+      var router = document.getElementById(selectedRouter);
+      router.setAttribute('data-status', 'disconnected');
+      router.style.backgroundColor = '#ccc';
+    }
+
+    function reconnectLink() {
+      var selectedRouter = document.getElementById('connect-router').value;
+      var router = document.getElementById(selectedRouter);
+      router.setAttribute('data-status', 'connected');
+
+      if (selectedRouter === 'router1') {
+        router.style.backgroundColor = '#3498db';
+      } else if (selectedRouter === 'router2') {
+        router.style.backgroundColor = '#2ecc71';
+      } else if (selectedRouter === 'router3') {
+        router.style.backgroundColor = '#e74c3c';
+      } else if (selectedRouter === 'router4') {
+        router.style.backgroundColor = '#f39c12';
+      }
+    }
+  </script>
+</body>
+</html>
